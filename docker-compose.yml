@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  postgres:
+    restart: always
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=testusr
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=testdb
+    volumes:
+      - ./postgres-data/postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  backend:
+    container_name: backend
+    restart: always
+    build: .
+    ports:
+      - 5001:5001
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/backend
+    depends_on:
+      - postgres
+    entrypoint: ["python", "wsgi.py"]
